@@ -66,4 +66,11 @@ node_modules/
 .env
 
 # dataconnect generated files
+<<<<<<< Updated upstream
 .dataconnect
+=======
+.dataconnect
+
+# NPM/Node
+node_modules
+>>>>>>> Stashed changes
