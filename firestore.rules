@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // users 컬렉션 규칙
+    // (이전에 만든 규칙: 내 정보는 나만 만들고 수정할 수 있다)
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if request.auth.uid != null && request.auth.uid == userId;
+      allow update, delete: if request.auth.uid == userId;
+    }
+
+    // '이메일 인증'을 반영한 예시 규칙
+    // 'projects' 컬렉션 규칙 (예시)
+    match /projects/{projectId} {
+      
+      // 1. 로그인해야 함
+      // 2. "그리고" 이메일 인증(email_verified)을 받아야만 글을 읽을 수 있음
+      allow read: if request.auth.uid != null 
+                    && request.auth.email_verified == true;
+
+      // 쓰기, 수정, 삭제도 마찬가지
+      allow create, update, delete: if request.auth.uid != null 
+                                     && request.auth.email_verified == true;
+    }
+
+  }
+}
