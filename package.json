@@ -13,5 +13,8 @@
   "keywords": [],
   "devDependencies": {
     "firebase-tools": "^14.24.2"
+  },
+  "dependencies": {
+    "firebase": "^12.6.0"
   }
 }
