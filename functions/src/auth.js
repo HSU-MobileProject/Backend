@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 
 // 회원가입(Auth 생성) 시 Firestore에 유저 문서 자동 생성

@@ -1,33 +1,41 @@
 const admin = require("firebase-admin");
 admin.initializeApp();
 
-// 각 모듈 파일 불러오기 (중복 제거 및 경로 통일)
+// 모듈 불러오기
+
+// [Trigger & 결제 로직]
 const authLogic = require("./src/auth");
 const notiLogic = require("./src/notifications");
 const payLogic = require("./src/payments");
 const likeLogic = require("./src/likes");
 const chatLogic = require("./src/chat");
-const projectLogic = require("./src/projects"); // 검색 키워드 생성 트리거
+const projectLogic = require("./src/projects/triggers"); // 검색 키워드 생성 트리거
 
+// [API 로직]
 const projectCRUD = require("./src/projects/crud");
 const projectFavorites = require("./src/projects/favorite");
 const projectSearch = require("./src/projects/search");
 
-// 함수 내보내기 (Cloud Functions에 배포될 이름)
+// 함수 내보내기
+
+//[Triggers] DB 변경 감지 및 자동화 로직
+
 // Auth
 exports.createProfile = authLogic.createProfile;
 exports.deleteProfile = authLogic.deleteProfile;
 
 // Notification & Chat
 exports.sendChatNotification = notiLogic.sendChatNotification;
-exports.updateChatRoomLastMessage = chatLogic.updateChatRoomLastMessage;
 exports.onPaymentCreate = notiLogic.onPaymentCreate;
+exports.updateChatRoomLastMessage = chatLogic.updateChatRoomLastMessage;
 
 // Project & Likes
 exports.generateKeywords = projectLogic.generateKeywords; // 검색 키워드 생성
 exports.onLikeChange = likeLogic.onLikeChange; // 좋아요 카운트 동기화
 
-//API 요청
+
+// [Callables] 클라이언트에서 직접 호출하는 API
+
 // Payment
 exports.createPayment = payLogic.createPayment;
 

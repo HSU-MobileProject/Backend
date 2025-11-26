@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 
 // 채팅 메시지가 생성될 때마다 -> 채팅방의 '마지막 메시지'와 '시간' 업데이트
