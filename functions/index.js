@@ -6,6 +6,8 @@ const authLogic = require("./src/auth");
 const notiLogic = require("./src/notifications");
 const payLogic = require("./src/payments");
 const likeLogic = require("./src/likes");
+const chatLogic = require("./src/chat"); // 또는 별도 파일
+const projectLogic = require("./src/projects");
 
 // 함수 내보내기 (Cloud Functions에 배포될 이름)
 exports.createProfile = authLogic.createProfile;
@@ -14,3 +16,5 @@ exports.sendChatNotification = notiLogic.sendChatNotification;
 exports.onPaymentCreate = notiLogic.onPaymentCreate;
 exports.createPayment = payLogic.createPayment;
 exports.onLikeChange = likeLogic.onLikeChange;
+exports.updateChatRoomLastMessage = chatLogic.updateChatRoomLastMessage;
+exports.generateKeywords = projectLogic.generateKeywords;
