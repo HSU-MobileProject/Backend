@@ -1,4 +1,4 @@
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
 admin.initializeApp();
 
 // 각 모듈 불러오기
@@ -8,6 +8,12 @@ const payLogic = require('./src/payments');
 const projectCRUD = require('./src/projects/crud');
 const projectFavorites = require('./src/projects/favorite');
 const projectSearch = require('./src/projects/search');
+const authLogic = require("./src/auth");
+const notiLogic = require("./src/notifications");
+const payLogic = require("./src/payments");
+const likeLogic = require("./src/likes");
+const chatLogic = require("./src/chat");
+const projectLogic = require("./src/projects");
 
 // 함수 내보내기 (Cloud Functions에 배포될 이름)
 exports.createProfile = authLogic.createProfile;
@@ -30,3 +36,8 @@ exports.listFavorites = projectFavorites.listFavorites;
 // 검색/필터
 exports.searchProjects = projectSearch.searchProjects;
 exports.filterByCategory = projectSearch.filterByCategory;
+exports.onPaymentCreate = notiLogic.onPaymentCreate;
+exports.createPayment = payLogic.createPayment;
+exports.onLikeChange = likeLogic.onLikeChange;
+exports.updateChatRoomLastMessage = chatLogic.updateChatRoomLastMessage;
+exports.generateKeywords = projectLogic.generateKeywords;
