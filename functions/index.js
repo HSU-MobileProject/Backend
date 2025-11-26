@@ -9,7 +9,7 @@ const notiLogic = require("./src/notifications");
 const payLogic = require("./src/payments");
 const likeLogic = require("./src/likes");
 const chatLogic = require("./src/chat");
-const projectLogic = require("./src/projects"); // 검색 키워드 생성 트리거
+const projectLogic = require("./src/projects/triggers"); // 검색 키워드 생성 트리거
 
 // [API 로직]
 const projectCRUD = require("./src/projects/crud");

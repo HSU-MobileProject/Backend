@@ -1,14 +1,14 @@
 // functions/src/projects/crud.js
 
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const functions = require("firebase-functions/v1");
+const admin = require("firebase-admin");
 
 /**
  * 프로젝트 등록
  */
 exports.createProject = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+        throw new functions.https.HttpsError("unauthenticated", "로그인이 필요합니다.");
     }
 
     const uid = context.auth.uid;
@@ -23,8 +23,8 @@ exports.createProject = functions.https.onCall(async (data, context) => {
 
     if (!title || !description) {
         throw new functions.https.HttpsError(
-            'invalid-argument',
-            'title과 description은 필수 입력 값입니다.'
+            "invalid-argument",
+            "title과 description은 필수 입력 값입니다."
         );
     }
 
@@ -34,14 +34,14 @@ exports.createProject = functions.https.onCall(async (data, context) => {
         techStack: Array.isArray(techStack) ? techStack : [],
         category: category || null,
         thumbnail: thumbnail || null,
-        price: typeof price === 'number' ? price : 0,
+        price: typeof price === "number" ? price : 0,
         ownerUid: uid,
         favoritesCount: 0,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
-    const docRef = await admin.firestore().collection('projects').add(project);
+    const docRef = await admin.firestore().collection("projects").add(project);
     return { success: true, projectId: docRef.id };
 });
 
@@ -53,8 +53,8 @@ exports.listProjects = functions.https.onCall(async (data, context) => {
     const limit = data?.limit && data.limit > 0 && data.limit <= 50 ? data.limit : 20;
 
     const snapshot = await admin.firestore()
-        .collection('projects')
-        .orderBy('createdAt', 'desc')
+        .collection("projects")
+        .orderBy("createdAt", "desc")
         .limit(limit)
         .get();
 
@@ -75,17 +75,17 @@ exports.getProject = functions.https.onCall(async (data, context) => {
 
     if (!projectId) {
         throw new functions.https.HttpsError(
-            'invalid-argument',
-            'projectId가 필요합니다.'
+            "invalid-argument",
+            "projectId가 필요합니다."
         );
     }
 
-    const doc = await admin.firestore().collection('projects').doc(projectId).get();
+    const doc = await admin.firestore().collection("projects").doc(projectId).get();
 
     if (!doc.exists) {
         throw new functions.https.HttpsError(
-            'not-found',
-            '해당 프로젝트를 찾을 수 없습니다.'
+            "not-found",
+            "해당 프로젝트를 찾을 수 없습니다."
         );
     }
 
@@ -98,7 +98,7 @@ exports.getProject = functions.https.onCall(async (data, context) => {
  */
 exports.updateProject = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+        throw new functions.https.HttpsError("unauthenticated", "로그인이 필요합니다.");
     }
 
     const uid = context.auth.uid;
@@ -106,18 +106,18 @@ exports.updateProject = functions.https.onCall(async (data, context) => {
 
     if (!projectId || !update) {
         throw new functions.https.HttpsError(
-            'invalid-argument',
-            'projectId 및 update 객체가 필요합니다.'
+            "invalid-argument",
+            "projectId 및 update 객체가 필요합니다."
         );
     }
 
-    const docRef = admin.firestore().collection('projects').doc(projectId);
+    const docRef = admin.firestore().collection("projects").doc(projectId);
     const doc = await docRef.get();
 
     if (!doc.exists) {
         throw new functions.https.HttpsError(
-            'not-found',
-            '해당 프로젝트를 찾을 수 없습니다.'
+            "not-found",
+            "해당 프로젝트를 찾을 수 없습니다."
         );
     }
 
@@ -125,12 +125,12 @@ exports.updateProject = functions.https.onCall(async (data, context) => {
 
     if (project.ownerUid !== uid) {
         throw new functions.https.HttpsError(
-            'permission-denied',
-            '본인이 등록한 프로젝트만 수정할 수 있습니다.'
+            "permission-denied",
+            "본인이 등록한 프로젝트만 수정할 수 있습니다."
         );
     }
 
-    const allowedFields = ['title', 'description', 'techStack', 'category', 'thumbnail', 'price'];
+    const allowedFields = ["title", "description", "techStack", "category", "thumbnail", "price"];
     const updateData = {};
 
     allowedFields.forEach(key => {
@@ -151,7 +151,7 @@ exports.updateProject = functions.https.onCall(async (data, context) => {
  */
 exports.deleteProject = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+        throw new functions.https.HttpsError("unauthenticated", "로그인이 필요합니다.");
     }
 
     const uid = context.auth.uid;
@@ -159,18 +159,18 @@ exports.deleteProject = functions.https.onCall(async (data, context) => {
 
     if (!projectId) {
         throw new functions.https.HttpsError(
-            'invalid-argument',
-            'projectId가 필요합니다.'
+            "invalid-argument",
+            "projectId가 필요합니다."
         );
     }
 
-    const docRef = admin.firestore().collection('projects').doc(projectId);
+    const docRef = admin.firestore().collection("projects").doc(projectId);
     const doc = await docRef.get();
 
     if (!doc.exists) {
         throw new functions.https.HttpsError(
-            'not-found',
-            '해당 프로젝트를 찾을 수 없습니다.'
+            "not-found",
+            "해당 프로젝트를 찾을 수 없습니다."
         );
     }
 
@@ -178,8 +178,8 @@ exports.deleteProject = functions.https.onCall(async (data, context) => {
 
     if (project.ownerUid !== uid) {
         throw new functions.https.HttpsError(
-            'permission-denied',
-            '본인이 등록한 프로젝트만 삭제할 수 있습니다.'
+            "permission-denied",
+            "본인이 등록한 프로젝트만 삭제할 수 있습니다."
         );
     }
 
