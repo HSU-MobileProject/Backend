@@ -10,14 +10,18 @@
 ```
 backend/
 └── functions/
-    ├── index.js              # Entry point (Export functions)
+    ├── index.js               # 메인 엔트리 포인트
     └── src/
-        ├── auth.js           # [Auth] 프로필 자동 생성 & 회원 탈퇴 처리
-        ├── chat.js           # [Trigger] 채팅방 마지막 메시지 & 시간 갱신
-        ├── likes.js          # [Trigger] 좋아요 카운트 동기화
-        ├── notifications.js  # [Trigger] FCM 푸시 알림 (채팅, 결제)
-        ├── payments.js       # [Callable] 결제 검증 및 내역 저장
-        └── projects.js       # [Trigger] 검색용 키워드 자동 생성
+        ├── auth.js            # [Trigger] 회원가입/탈퇴 후처리
+        ├── chat.js            # [Trigger] 채팅방 메타데이터(마지막 메시지) 동기화
+        ├── likes.js           # [Trigger] 좋아요 카운트 자동 증감
+        ├── notifications.js   # [Trigger] FCM 알림 발송 (채팅, 결제)
+        ├── payments.js        # [Callable] 포트원 결제 검증
+        ├── projects.js        # [Trigger] 검색용 키워드 자동 생성
+        └── projects/          # [Project Domain]
+            ├── crud.js        # [Callable] 프로젝트 CRUD API
+            ├── favorite.js    # [Callable] 즐겨찾기 추가/삭제 API
+            └── search.js      # [Callable] 프로젝트 검색 및 필터링 API
 ```
 
 ## ✨ Key Features (Server Logic)
