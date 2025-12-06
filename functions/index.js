@@ -27,7 +27,9 @@ exports.deleteProfile = authLogic.deleteProfile;
 // Notification & Chat
 exports.sendChatNotification = notiLogic.sendChatNotification;
 exports.onPaymentCreate = notiLogic.onPaymentCreate;
+exports.sendLikeNotification = notiLogic.sendLikeNotification;
 exports.updateChatRoomLastMessage = chatLogic.updateChatRoomLastMessage;
+exports.createChatRoom = chatLogic.createChatRoom;
 
 // Project & Likes
 exports.generateKeywords = projectLogic.generateKeywords; // 검색 키워드 생성
