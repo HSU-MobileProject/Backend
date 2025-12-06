@@ -39,6 +39,15 @@ exports.createPayment = functions.https.onCall(async (data, context) => {
                 createdAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
+            // 구매 내역 추가 (권한 부여용)
+            await admin.firestore().collection("purchases").add({
+                userId: context.auth.uid,
+                projectId: merchant_uid.split("_")[1] || "unknown", // merchant_uid format: "pay_{projectId}_{timestamp}" 가정
+                paymentId: imp_uid,
+                amount: paymentData.amount,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
             return { success: true, message: "결제 검증 완료" };
         } else {
             throw new functions.https.HttpsError("invalid-argument", "결제 금액이 일치하지 않습니다.");
