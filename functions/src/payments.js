@@ -11,20 +11,27 @@ exports.createPayment = functions.https.onCall(async (data, context) => {
     }
 
     const { imp_uid, merchant_uid, amount } = data;
+    let paymentData = { amount, status: "paid" }; // Default for test mode
 
     try {
-        // PortOne 토큰 발급 받기
-        const getTokenResponse = await axios.post("https://api.iamport.kr/users/getToken", {
-            imp_key: process.env.PORTONE_API_KEY,
-            imp_secret: process.env.PORTONE_API_SECRET
-        });
-        const { access_token } = getTokenResponse.data.response;
+        // [TEST MODE] imp_uid가 'test_'로 시작하면 실제 검증 건너뜀
+        if (imp_uid && imp_uid.startsWith("test_")) {
+            console.log(`[TEST MODE] Skipping PortOne verification for ${imp_uid}`);
+            // 테스트 모드에서는 요청받은 amount를 그대로 사용
+        } else {
+            // [REAL MODE] PortOne 토큰 발급 받기
+            const getTokenResponse = await axios.post("https://api.iamport.kr/users/getToken", {
+                imp_key: process.env.PORTONE_API_KEY,
+                imp_secret: process.env.PORTONE_API_SECRET
+            });
+            const { access_token } = getTokenResponse.data.response;
 
-        // 결제 정보 조회
-        const getPaymentData = await axios.get(`https://api.iamport.kr/payments/${imp_uid}`, {
-            headers: { Authorization: access_token }
-        });
-        const paymentData = getPaymentData.data.response;
+            // 결제 정보 조회
+            const getPaymentData = await axios.get(`https://api.iamport.kr/payments/${imp_uid}`, {
+                headers: { Authorization: access_token }
+            });
+            paymentData = getPaymentData.data.response;
+        }
 
         // 검증 로직
         if (paymentData.amount === amount && paymentData.status === "paid") {
