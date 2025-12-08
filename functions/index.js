@@ -59,4 +59,8 @@ exports.listFavorites = projectFavorites.listFavorites;
 exports.searchProjects = projectSearch.searchProjects;
 exports.filterByCategory = projectSearch.filterByCategory;
 
-exports.myProjects = myPageLogic.myProjects;
+// MyPage
+exports.myProjects = mypageLogic.myProjects;
+exports.getMyTransactionStats = mypageLogic.getMyTransactionStats;
+exports.getMyProfile = mypageLogic.getMyProfile;
+exports.updateMyProfile = mypageLogic.updateMyProfile;

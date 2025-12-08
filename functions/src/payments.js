@@ -46,6 +46,14 @@ exports.createPayment = functions.https.onCall(async (data, context) => {
                 createdAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
+            // 판매자 조회
+            const projectId_temp = merchant_uid.split("_")[1] || "unknown"; // projectId 추출
+            const projectDoc_temp = await admin.firestore()
+                .collection("projects")
+                .doc(projectId_temp)
+                .get();
+            const sellerUid_temp = projectDoc_temp.exists ? projectDoc_temp.data().ownerUid : null;
+
             // 구매 내역 추가 (권한 부여용)
             await admin.firestore().collection("purchases").add({
                 userId: context.auth.uid,
