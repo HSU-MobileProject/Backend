@@ -31,5 +31,9 @@ service cloud.firestore {
         match /notifications/{notificationId} {
             allow read, write: if request.auth != null;
         }
+        // 7. Payments (결제 내역): 로그인한 사용자 읽기/쓰기 가능 (본인 확인 로직 추가 권장)
+        match /payments/{paymentId} {
+            allow read, write: if request.auth != null;
+        }
     }
 }
