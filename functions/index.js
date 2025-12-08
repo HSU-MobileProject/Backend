@@ -16,6 +16,8 @@ const projectCRUD = require("./src/projects/crud");
 const projectFavorites = require("./src/projects/favorite");
 const projectSearch = require("./src/projects/search");
 
+const myPageLogic = require("./src/projects/mypage");
+
 // 함수 내보내기
 
 //[Triggers] DB 변경 감지 및 자동화 로직
@@ -56,3 +58,5 @@ exports.listFavorites = projectFavorites.listFavorites;
 // Search
 exports.searchProjects = projectSearch.searchProjects;
 exports.filterByCategory = projectSearch.filterByCategory;
+
+exports.myProjects = myPageLogic.myProjects;
