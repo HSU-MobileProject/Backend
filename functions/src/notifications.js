@@ -20,6 +20,10 @@ exports.sendChatNotification = functions.firestore
         const receiverUid = participants.find(uid => uid !== message.senderUid);
         if (!receiverUid) return null;
 
+        // 발신자 정보 가져오기 (이름 표시용)
+        const senderSnap = await admin.firestore().collection("users").doc(message.senderUid).get();
+        const senderName = senderSnap.data()?.displayName || "알 수 없는 사용자";
+
         // 수신자의 FCM 토큰 가져오기
         const userSnap = await admin.firestore().collection("users").doc(receiverUid).get();
         const fcmToken = userSnap.data()?.fcmToken;
@@ -32,7 +36,7 @@ exports.sendChatNotification = functions.firestore
             receiverId: receiverUid,
             type: "message",
             action: "메시지를 보냈습니다.",
-            target: roomData.title || "채팅방", // 채팅방 제목이 있다면 사용
+            target: roomData.title || senderName, // 채팅방 제목이 없으면 발신자 이름 사용 (1:1 채팅 등)
             roomId: roomId,
             isRead: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
