@@ -17,11 +17,12 @@ exports.sendChatNotification = functions.firestore
         const participants = roomData.participants;
 
         // 수신자 찾기 (자신이 아닌 사람)
-        const receiverUid = participants.find(uid => uid !== message.senderUid);
+        // 20. receiverUid code is fine
+        const receiverUid = participants.find(uid => uid !== message.senderId);
         if (!receiverUid) return null;
 
         // 발신자 정보 가져오기 (이름 표시용)
-        const senderSnap = await admin.firestore().collection("users").doc(message.senderUid).get();
+        const senderSnap = await admin.firestore().collection("users").doc(message.senderId).get();
         const senderName = senderSnap.data()?.displayName || "알 수 없는 사용자";
 
         // 수신자의 FCM 토큰 가져오기
@@ -29,14 +30,12 @@ exports.sendChatNotification = functions.firestore
         const fcmToken = userSnap.data()?.fcmToken;
 
         // 알림 데이터 생성 (DB에 저장) - Frontend 구조에 맞춤
-        // userId: Actor (Sender)
-        // receiverId: Recipient
         await admin.firestore().collection("notifications").add({
-            userId: message.senderUid,
+            userId: message.senderId,
             receiverId: receiverUid,
             type: "message",
             action: "메시지를 보냈습니다.",
-            target: roomData.title || senderName, // 채팅방 제목이 없으면 발신자 이름 사용 (1:1 채팅 등)
+            target: roomData.title || senderName,
             roomId: roomId,
             isRead: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
@@ -106,7 +105,6 @@ exports.sendLikeNotification = functions.firestore
         const likerName = likerSnap.data()?.displayName || "누군가";
 
         // 알림 내역 저장 (DB)
-        // userId: Actor (Liker)
         await admin.firestore().collection("notifications").add({
             userId: likerId,
             receiverId: ownerId,
@@ -121,7 +119,6 @@ exports.sendLikeNotification = functions.firestore
         // 주인 FCM 토큰 가져오기
         const ownerSnap = await admin.firestore().collection("users").doc(ownerId).get();
         const fcmToken = ownerSnap.data()?.fcmToken;
-
         if (!fcmToken) return null;
 
         // 알림 전송 (FCM)
@@ -137,4 +134,74 @@ exports.sendLikeNotification = functions.firestore
         };
 
         return admin.messaging().sendToDevice(fcmToken, payload);
+    });
+
+// [NEW] 지원 알림 (프로젝트 주인에게)
+exports.onApplicationCreate = functions.firestore
+    .document("applications/{applicationId}")
+    .onCreate(async (snap, context) => {
+        const application = snap.data();
+        const applicantId = application.applicantId;
+        const projectId = application.projectId;
+
+        // 프로젝트 정보 (주인 찾기)
+        const projectSnap = await admin.firestore().collection("projects").doc(projectId).get();
+        if (!projectSnap.exists) return null;
+        const projectData = projectSnap.data();
+        const ownerId = projectData.ownerId;
+
+        if (applicantId === ownerId) return null; // Self application?
+
+        // 지원자 정보
+        const applicantSnap = await admin.firestore().collection("users").doc(applicantId).get();
+        const applicantName = applicantSnap.data()?.displayName || "누군가";
+
+        // 알림 저장
+        await admin.firestore().collection("notifications").add({
+            userId: applicantId,
+            receiverId: ownerId,
+            type: "application",
+            action: "프로젝트에 지원했습니다.",
+            target: projectData.title,
+            projectId: projectId,
+            applicationId: context.params.applicationId,
+            isRead: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // FCM 전송 (Optional)
+    });
+
+// [NEW] 지원 상태 변경 알림 (지원자에게)
+exports.onApplicationUpdate = functions.firestore
+    .document("applications/{applicationId}")
+    .onUpdate(async (change, context) => {
+        const before = change.before.data();
+        const after = change.after.data();
+
+        // 상태가 변경되었을 때만 (특히 'approved' 또는 'accepted')
+        if (before.status === after.status) return null;
+
+        // 예: 'approved' 상태가 승인이라고 가정
+        // (사용자가 사용하는 상태값에 따라 수정 필요: '승인', '수락', 'approved' 등)
+        if (after.status !== 'approved' && after.status !== '수락' && after.status !== '합격') return null;
+
+        const applicantId = after.applicantId;
+        const projectId = after.projectId;
+
+        const projectSnap = await admin.firestore().collection("projects").doc(projectId).get();
+        const projectData = projectSnap.data() || {};
+
+        // 알림 저장
+        await admin.firestore().collection("notifications").add({
+            userId: "system",
+            receiverId: applicantId,
+            type: "system", // Or 'application_update'
+            action: `지원이 승인되었습니다!`,
+            target: projectData.title || "지원한 프로젝트",
+            projectId: projectId,
+            applicationId: context.params.applicationId,
+            isRead: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
     });

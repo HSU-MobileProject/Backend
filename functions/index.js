@@ -6,7 +6,7 @@ admin.initializeApp();
 // [Trigger & 결제 로직]
 const authLogic = require("./src/auth");
 const notiLogic = require("./src/notifications");
-const payLogic = require("./src/payments");
+// const payLogic = require("./src/payments"); // refactored to src/payments/create
 const likeLogic = require("./src/likes");
 const chatLogic = require("./src/chat");
 const projectLogic = require("./src/projects/triggers"); // 검색 키워드 생성 트리거
@@ -30,6 +30,8 @@ exports.deleteProfile = authLogic.deleteProfile;
 exports.sendChatNotification = notiLogic.sendChatNotification;
 exports.onPaymentCreate = notiLogic.onPaymentCreate;
 exports.sendLikeNotification = notiLogic.sendLikeNotification;
+exports.onApplicationCreate = notiLogic.onApplicationCreate;
+exports.onApplicationUpdate = notiLogic.onApplicationUpdate;
 exports.updateChatRoomLastMessage = chatLogic.updateChatRoomLastMessage;
 exports.createChatRoom = chatLogic.createChatRoom;
 
@@ -41,7 +43,10 @@ exports.onLikeChange = likeLogic.onLikeChange; // 좋아요 카운트 동기화
 // [Callables] 클라이언트에서 직접 호출하는 API
 
 // Payment
-exports.createPayment = payLogic.createPayment;
+// Payment
+// Payment
+exports.createPayment = require("./src/payments/create").createPayment;
+exports.verifyPayment = require("./src/payments/verify").verifyPayment;
 
 // Project CRUD
 exports.createProject = projectCRUD.createProject;
