@@ -1,21 +1,35 @@
 rules_version = '2';
 service cloud.firestore {
     match /databases/{database}/documents {
-
-        // users 컬렉션 규칙
-        // (이전에 만든 규칙: 내 정보는 나만 만들고 수정할 수 있다)
+        // 1. Users: 누구나 읽기 가능, 본인만 수정 가능
         match /users/{userId} {
             allow read: if true;
             allow create: if request.auth.uid != null && request.auth.uid == userId;
             allow update, delete: if request.auth.uid == userId;
         }
-
-        // '이메일 인증'을 반영한 예시 규칙
-        // 'projects' 컬렉션 규칙
+        // 2. Projects: 누구나 읽기 가능, 로그인한 사용자는 생성/수정 가능
         match /projects/{projectId} {
-            // 로그인한 사용자는 읽기/쓰기 가능
             allow read: if true; 
             allow create, update, delete: if request.auth.uid != null;
+        }
+        // 3. Applications (지원서): 로그인한 사용자 허용
+        match /applications/{applicationId} {
+            allow read, write: if request.auth != null;
+        }
+        // 4. ChatRooms (채팅방) 및 하위 Messages: 로그인한 사용자 허용
+        match /chatRooms/{roomId} {
+            allow read, write: if request.auth != null;
+            match /messages/{messageId} {
+                allow read, write: if request.auth != null;
+            }
+        }
+        // 5. UserLikes (좋아요): 본인만 읽기/쓰기 가능
+        match /userLikes/{userId}/projects/{projectId} {
+            allow read, write: if request.auth.uid == userId;
+        }
+        // 6. Notifications (알림): 로그인한 사용자 읽기/쓰기 가능
+        match /notifications/{notificationId} {
+            allow read, write: if request.auth != null;
         }
     }
 }
