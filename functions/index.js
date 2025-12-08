@@ -60,7 +60,7 @@ exports.searchProjects = projectSearch.searchProjects;
 exports.filterByCategory = projectSearch.filterByCategory;
 
 // MyPage
-exports.myProjects = mypageLogic.myProjects;
-exports.getMyTransactionStats = mypageLogic.getMyTransactionStats;
-exports.getMyProfile = mypageLogic.getMyProfile;
-exports.updateMyProfile = mypageLogic.updateMyProfile;
+exports.myProjects = myPageLogic.myProjects;
+exports.getMyTransactionStats = myPageLogic.getMyTransactionStats;
+exports.getMyProfile = myPageLogic.getMyProfile;
+exports.updateMyProfile = myPageLogic.updateMyProfile;
