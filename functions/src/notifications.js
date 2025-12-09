@@ -107,6 +107,7 @@ exports.sendLikeNotification = functions.firestore
         // 알림 내역 저장 (DB)
         await admin.firestore().collection("notifications").add({
             userId: likerId,
+            userName: likerName,
             receiverId: ownerId,
             type: "like",
             action: "프로젝트를 좋아합니다.",
@@ -159,6 +160,7 @@ exports.onApplicationCreate = functions.firestore
         // 알림 저장
         await admin.firestore().collection("notifications").add({
             userId: applicantId,
+            userName: applicantName, // [추가] 이름 저장
             receiverId: ownerId,
             type: "application",
             action: "프로젝트에 지원했습니다.",
