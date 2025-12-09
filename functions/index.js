@@ -37,7 +37,7 @@ exports.createChatRoom = chatLogic.createChatRoom;
 
 // Project & Likes
 exports.generateKeywords = projectLogic.generateKeywords; // 검색 키워드 생성
-exports.onLikeChange = likeLogic.onLikeChange; // 좋아요 카운트 동기화
+exports.onLikeChange = likeLogic.onLikeChange; // 즐겨찾기 카운트 동기화
 
 
 // [Callables] 클라이언트에서 직접 호출하는 API

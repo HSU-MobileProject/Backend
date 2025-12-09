@@ -83,12 +83,12 @@ exports.onPaymentCreate = functions.firestore
         });
     });
 
-// 좋아요 알림
+// 즐겨찾기 알림
 exports.sendLikeNotification = functions.firestore
     .document("userLikes/{userId}/projects/{projectId}")
     .onCreate(async (snap, context) => {
         const projectId = context.params.projectId;
-        const likerId = context.params.userId; // 좋아요 누른 사람
+        const likerId = context.params.userId; // 즐겨찾기 누른 사람
 
         // 프로젝트 정보 가져오기 (주인 찾기)
         const projectSnap = await admin.firestore().collection("projects").doc(projectId).get();
@@ -97,10 +97,10 @@ exports.sendLikeNotification = functions.firestore
         const projectData = projectSnap.data();
         const ownerId = projectData.ownerId;
 
-        // 자기 자신이 누른 좋아요는 알림 제외
+        // 자기 자신이 누른 즐겨찾기는 알림 제외
         if (likerId === ownerId) return null;
 
-        // 좋아요 누른 사람 정보 가져오기 (이름 표시용 - FCM 알림용)
+        // 즐겨찾기 누른 사람 정보 가져오기 (이름 표시용 - FCM 알림용)
         const likerSnap = await admin.firestore().collection("users").doc(likerId).get();
         const likerName = likerSnap.data()?.displayName || "누군가";
 
@@ -125,8 +125,8 @@ exports.sendLikeNotification = functions.firestore
         // 알림 전송 (FCM)
         const payload = {
             notification: {
-                title: "새로운 좋아요!",
-                body: `${likerName}님이 회원님의 '${projectData.title}' 프로젝트를 좋아합니다.`,
+                title: "새로운 즐겨찾기!",
+                body: `${likerName}님이 회원님의 '${projectData.title}' 프로젝트를 즐겨찾기에 추가했습니다.`,
             },
             data: {
                 projectId: projectId,
