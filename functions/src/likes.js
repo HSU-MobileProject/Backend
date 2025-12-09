@@ -7,13 +7,13 @@ exports.onLikeChange = functions.firestore
         const projectId = context.params.projectId;
         const projectRef = admin.firestore().collection("projects").doc(projectId);
 
-        // 좋아요 추가됨 (Create)
+        // 즐겨찾기 추가됨 (Create)
         if (!change.before.exists && change.after.exists) {
             return projectRef.update({
                 likes: admin.firestore.FieldValue.increment(1)
             });
         }
-        // 좋아요 취소됨 (Delete)
+        // 즐겨찾기 취소됨 (Delete)
         else if (change.before.exists && !change.after.exists) {
             return projectRef.update({
                 likes: admin.firestore.FieldValue.increment(-1)
